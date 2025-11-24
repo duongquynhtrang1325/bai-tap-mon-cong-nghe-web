@@ -1,0 +1,2 @@
+Câu hỏi phản biện
+Lý do tại sao dữ liệu nhạy cảm (như thông tin xác thực, giỏ hàng...) nên được ưu tiên lưu trữ bằng $_SESSION thay vì $_COOKIE?
