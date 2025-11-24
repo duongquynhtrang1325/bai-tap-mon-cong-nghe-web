@@ -1,0 +1,7 @@
+Cau hoi bien luan
+1.Thông tin trích xuất
+Request URL: http://tlu.edu.vn/
+Request Method: GET
+Status Code: 200 OK
+2.Câu hỏi phản biện 
+Khi em bấm Enter để vào tlu.edu.vn, chỉ có một yêu cầu (request) đầu tiên đến file HTML của trang. Sau đó, trình duyệt tự động gửi thêm rất nhiều yêu cầu khác để lấy các file CSS, JavaScript và Hình ảnh. Tại sao trình duyệt lại cần phải gửi yêu cầu riêng để lấy từng file CSS, JS, hay Hình ảnh, mà không lấy được chúng ngay từ yêu cầu HTML đầu tiên?
