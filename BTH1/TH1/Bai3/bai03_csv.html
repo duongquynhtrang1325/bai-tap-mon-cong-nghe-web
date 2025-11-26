@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 03 - Đọc và Hiển thị Dữ liệu CSV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto; /* Cho phép cuộn ngang nếu bảng quá rộng */
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            white-space: nowrap; /* Ngăn không cho nội dung bị xuống dòng */
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Danh Sách Tài Khoản Đọc từ Tệp CSV</h1>
+    <table id="csv-table">
+        </table>
+</div>
+
+<script>
+    // ----------------------------------------------------------------------------------
+    // BƯỚC 1: Dữ liệu CSV thô (sao chép từ hình ảnh)
+    // ----------------------------------------------------------------------------------
+    const rawCSVData = `
+username,password,lastname,firstname,city,email,course1
+2351160500,cse@485A,Đinh Thị LAn Anh,65HTTT,2351160500@e.tlu.edu.vn,CSE485.202401
+2151062699,cse@485A,Đỗ Phạm Nhật Anh,63CNTT4,2151062699@e.tlu.edu.vn,CSE485.202401
+2351160501,cse@485A,Đỗ Quang Khải,65HTTT,2351160501@e.tlu.edu.vn,CSE485.202401
+2351160502,cse@485A,Nguuyễn Quang Tiên,65HTTT,2351160502@e.tlu.edu.vn,CSE485.202401
+2351160503,cse@485A,Tạ Thị NgọcAnh,65HTTT,2351160503@e.tlu.edu.vn,CSE485.202401
+2351160504,cse@485A,Trần Mai Phương Anh,65HTTT,2351160504@e.tlu.edu.vn,CSE485.202401
+2351160505,cse@485A,Trương Thị Ngọc Ánh,65HTTT,2351160505@e.tlu.edu.vn,CSE485.202401
+2351160506,cse@485A,Nguyễn Văn Tiến,65HTTT,2351160506@e.tlu.edu.vn,CSE485.202401
+2251161950,cse@485A,Nguyễn Thị Ánh,64HTTT3,2251161950@e.tlu.edu.vn,CSE485.202401
+2151163670,cse@485A,Trịnh Phương Bắc,63HTTT2,2151163670@e.tlu.edu.vn,CSE485.202401
+2351160507,cse@485A,Thiều Quang Gia Bảo,65HTTT,2351160507@e.tlu.edu.vn,CSE485.202401
+2251172261,cse@485A,Nguyễn Nhật Cường,64KTPM1,2251172261@e.tlu.edu.vn,CSE485.202401
+2251161972,cse@485A,TRỊNH QUang ĐẠT,64HTTT2,2251161972@e.tlu.edu.vn,CSE485.202401
+2251172280,cse@485A,VŨ VĂN ĐỒNG,64KTPM4,2251172280@e.tlu.edu.vn,CSE485.202401
+2151062753,cse@485A,Đặng Minh Đức,63CNTT.V,2151062753@e.tlu.edu.vn,CSE485.202401
+2351160510,cse@485A,Đỗ Đình Đức,65HTTT,2351160510@e.tlu.edu.vn,CSE485.202401
+1951060618,cse@485A,Ngân Minh Đức,61HTH2,1951060618@e.tlu.edu.vn,CSE485.202401
+2351160511,cse@485A,Nguyễn Văn Đức,65HTTT,2351160511@e.tlu.edu.vn,CSE485.202401
+2351160512,cse@485A,Nguyễn Quang Đức,65HTTT,2351160512@e.tlu.edu.vn,CSE485.202401
+`;
+
+    // ----------------------------------------------------------------------------------
+    // BƯỚC 2: Hàm Phân tích (Parsing) Dữ liệu CSV
+    // ----------------------------------------------------------------------------------
+    function parseCSV(csvText) {
+        // Tách thành các dòng, loại bỏ các dòng trống
+        const lines = csvText.trim().split('\n').filter(line => line.trim() !== '');
+
+        if (lines.length === 0) return { headers: [], data: [] };
+
+        // Dòng đầu tiên là tiêu đề (Header)
+        const headers = lines[0].split(',').map(header => header.trim());
+
+        // Các dòng còn lại là dữ liệu
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            const rowObject = {};
+            
+            // Tạo đối tượng {key: value} dựa trên header và giá trị
+            for (let j = 0; j < headers.length && j < values.length; j++) {
+                rowObject[headers[j]] = values[j].trim();
+            }
+            data.push(rowObject);
+        }
+
+        return { headers, data };
+    }
+
+    const { headers, data } = parseCSV(rawCSVData);
+    const tableElement = document.getElementById('csv-table');
+
+    // ----------------------------------------------------------------------------------
+    // BƯỚC 3: Hiển thị Dữ liệu ra Bảng HTML
+    // ----------------------------------------------------------------------------------
+    function renderCSVTable() {
+        if (data.length === 0) {
+            tableElement.innerHTML = '<tr><td>Không có dữ liệu để hiển thị.</td></tr>';
+            return;
+        }
+
+        let html = '';
+
+        // 1. Tạo hàng Tiêu đề (Header Row)
+        html += '<thead><tr>';
+        // Thêm cột STT
+        html += '<th>STT</th>'; 
+        headers.forEach(header => {
+            // Chuyển đổi tên header thành định dạng dễ đọc (ví dụ: lastname -> Last Name)
+            const readableHeader = header.charAt(0).toUpperCase() + header.slice(1).replace(/([A-Z])/g, ' $1').trim();
+            html += `<th>${readableHeader}</th>`;
+        });
+        html += '</tr></thead>';
+        
+        // 2. Tạo nội dung Bảng (Body)
+        html += '<tbody>';
+        data.forEach((row, index) => {
+            html += '<tr>';
+            // Giá trị STT
+            html += `<td>${index + 1}</td>`;
+            // Giá trị của từng cột
+            headers.forEach(header => {
+                // Lấy giá trị của trường đó trong đối tượng row
+                html += `<td>${row[header]}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += '</tbody>';
+
+        tableElement.innerHTML = html;
+    }
+
+    // Khởi tạo hiển thị bảng khi trang web tải xong
+    document.addEventListener('DOMContentLoaded', renderCSVTable);
+</script>
+
+</body>
+</html>
