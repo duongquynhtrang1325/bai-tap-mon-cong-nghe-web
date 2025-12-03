@@ -1,0 +1,1 @@
+"Trong tệp views/sinhvien_view.php, tại sao chúng ta tuyệt đối không được phép viết code kết nối PDO hay SELECT *? Lợi ích của việc 'cấm' View làm việc trực tiếp với CSDL là gì?"
